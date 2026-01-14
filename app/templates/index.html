@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fake Instagram Profile Detector</title>
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Instagram Fake Profile Detection</h1>
+    <p class="subtitle">Enter profile details to verify authenticity</p>
+
+    <form action="/predict" method="post">
+
+        <label>Username</label>
+        <input type="text" name="username" required>
+
+        <label>Full Name</label>
+        <input type="text" name="fullname" required>
+
+        <label>Bio / Description</label>
+        <textarea name="bio" rows="3"></textarea>
+
+        <div class="row">
+            <div>
+                <label>Profile Picture</label>
+                <select name="profile_pic">
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Private Account</label>
+                <select name="private">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+
+            <div>
+                <label>External URL</label>
+                <select name="external_url">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </select>
+            </div>
+        </div>
+
+        <label>Number of Posts</label>
+        <input type="number" name="posts" required>
+
+        <label>Followers</label>
+        <input type="number" name="followers" required>
+
+        <label>Following</label>
+        <input type="number" name="following" required>
+
+        <button type="submit">Check Profile</button>
+
+    </form>
+
+    {% if prediction %}
+        <div class="result {{ prediction_class }}">
+            <h2>{{ prediction }}</h2>
+        </div>
+    {% endif %}
+</div>
+
+</body>
+</html>
