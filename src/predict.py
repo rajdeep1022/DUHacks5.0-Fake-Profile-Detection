@@ -1,42 +1,68 @@
-import pickle
 import numpy as np
+import pickle
 import os
 
-# Base directory of project
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 MODEL_PATH = os.path.join(BASE_DIR, "model", "trained_model.pkl")
 SCALER_PATH = os.path.join(BASE_DIR, "model", "scaler.pkl")
 
-# Load once (important for performance)
+# Load model & scaler once
 model = pickle.load(open(MODEL_PATH, "rb"))
 scaler = pickle.load(open(SCALER_PATH, "rb"))
 
-FEATURE_ORDER = [
-    "profile_pic",
-    "nums_username_ratio",
-    "fullname_words",
-    "nums_fullname_ratio",
-    "name_equals_username",
-    "bio_length",
-    "external_url",
-    "is_private",
-    "posts",
-    "followers",
-    "following"
-]
 
-def predict_profile(input_data):
-    """
-    input_data: list of 11 numeric features in correct order
-    return: int (1 = Fake, 0 = Genuine)
-    """
+def extract_features(form):
+    username = form["username"]
+    fullname = form["fullname"]
+    bio = form.get("bio", "")
 
-    if len(input_data) != 11:
-        raise ValueError("Expected 11 input features")
+    profile_pic = int(form["profile_pic"])
+    nums_username_ratio = sum(c.isdigit() for c in username) / len(username)
 
-    input_array = np.array(input_data).reshape(1, -1)
-    scaled_input = scaler.transform(input_array)
-    prediction = model.predict(scaled_input)[0]
+    fullname_words = len(fullname.split())
+    nums_fullname_ratio = (
+        sum(c.isdigit() for c in fullname) / len(fullname)
+        if len(fullname) > 0 else 0
+    )
 
-    return int(prediction)
+    name_equals_username = int(username.lower() == fullname.lower())
+    bio_length = len(bio)
+
+    external_url = int(form["external_url"])
+    is_private = int(form["private"])
+    posts = int(form["posts"])
+    followers = int(form["followers"])
+    following = int(form["following"])
+
+    features = np.array([[
+        profile_pic,
+        nums_username_ratio,
+        fullname_words,
+        nums_fullname_ratio,
+        name_equals_username,
+        bio_length,
+        external_url,
+        is_private,
+        posts,
+        followers,
+        following
+    ]])
+
+    return features
+
+
+def predict_profile(form):
+    features = extract_features(form)
+
+    # Scale features
+    features_scaled = scaler.transform(features)
+
+    prediction = model.predict(features_scaled)[0]
+
+    # Optional probability
+    probability = None
+    if hasattr(model, "predict_proba"):
+        probability = model.predict_proba(features_scaled)[0][prediction]
+
+    return prediction, probability
