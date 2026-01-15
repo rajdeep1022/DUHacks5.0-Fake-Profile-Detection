@@ -4,4 +4,7 @@
     <option name="sdkName" value="Python 3.13" />
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.13" project-jdk-type="Python SDK" />
+    <option name="sdkName" value="Python 3.13 (DUHacks5.0-Fake-Profile-Detection)" />
+  </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.13 (DUHacks5.0-Fake-Profile-Detection)" project-jdk-type="Python SDK" />
 </project>
